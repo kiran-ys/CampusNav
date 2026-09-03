@@ -80,6 +80,7 @@ public final class CampusService {
         CampusGraph.WeightedPath path = graph.dijkstra(source, destination);
         PathResult result=toResult(path.ids(), path.found() ? path.totalDistanceMetres() : null);repository.recordUsage("ROUTE_QUERY","DIJKSTRA",result.found());return result;
     }
+    public synchronized List<PathResult> findAlternativeRoutes(String sourceId,String destinationId,int limit){String source=requireLocationId(sourceId,"Source"),destination=requireLocationId(destinationId,"Destination");List<PathResult> results=graph.shortestSimplePaths(source,destination,limit).stream().map(p->toResult(p.ids(),p.totalDistanceMetres())).toList();repository.recordUsage("ROUTE_QUERY","ALTERNATIVES",!results.isEmpty());return results;}
 
     private void rebuildGraph(){CampusGraph replacement=new CampusGraph();for(Location l:repository.findAllLocations())replacement.addVertex(l.id());for(Route r:repository.findAllRoutes())replacement.addBidirectionalRoute(r.sourceId(),r.destinationId(),r.distanceMetres());graph=replacement;}
 

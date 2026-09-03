@@ -110,6 +110,7 @@ public final class ApiServer implements AutoCloseable {
         }
         if(path.equals("/api/routes/reachable")){requireMethod(method,"GET");send(x,200,Json.path(service.findAnyRoute(required(q,"source"),required(q,"destination")),"BFS"));return;}
         if(path.equals("/api/routes/shortest")){requireMethod(method,"GET");send(x,200,Json.path(service.findShortestRoute(required(q,"source"),required(q,"destination")),"DIJKSTRA"));return;}
+        if(path.equals("/api/routes/alternatives")){requireMethod(method,"GET");int limit=q.containsKey("limit")?parseLimit(q.get("limit")):3;send(x,200,Json.alternativePaths(service.findAlternativeRoutes(required(q,"source"),required(q,"destination"),limit)));return;}
         send(x,404,Json.error("NOT_FOUND","API endpoint not found.",id));
     }
 
@@ -122,6 +123,7 @@ public final class ApiServer implements AutoCloseable {
     private static int integer(Map<String,Object>b,String key){Object v=b.get(key);if(!(v instanceof Integer i))throw new IllegalArgumentException("JSON field '"+key+"' must be an integer.");return i;}
     private static Double optionalDouble(Map<String,Object>b,String key){Object v=b.get(key);if(v==null)return null;if(v instanceof Number n)return n.doubleValue();throw new IllegalArgumentException("JSON field '"+key+"' must be a number.");}
     private static String required(Map<String,String>q,String key){String v=q.get(key);if(v==null||v.isBlank())throw new IllegalArgumentException("Query parameter '"+key+"' is required.");return v;}
+    private static int parseLimit(String value){try{return Integer.parseInt(value);}catch(NumberFormatException e){throw new IllegalArgumentException("Query parameter 'limit' must be an integer.");}}
     private static Map<String,String> query(String raw){Map<String,String>r=new LinkedHashMap<>();if(raw==null||raw.isBlank())return r;for(String pair:raw.split("&")){String[]p=pair.split("=",2);r.put(decode(p[0]),decode(p.length>1?p[1]:""));}return r;}
     private static String decode(String v){return URLDecoder.decode(v,StandardCharsets.UTF_8);}
     private void requireMethod(String actual,String expected){if(!actual.equals(expected))throw new MethodException();}

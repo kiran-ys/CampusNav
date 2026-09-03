@@ -35,6 +35,7 @@ public final class ApiIntegrationTestSuite {
             test("invalid route is 422",()->expect(post("/api/routes","{\"sourceId\":\"AUD\",\"destinationId\":\"LIB\",\"distanceMetres\":0}"),422,"VALIDATION_ERROR"));
             test("BFS reachable",()->expect(get("/api/routes/reachable?source=GATE-A&destination=CSE"),200,"\"algorithm\":\"BFS\""));
             test("Dijkstra shortest is 440",()->expect(get("/api/routes/shortest?source=GATE-A&destination=CSE"),200,"\"totalDistanceMetres\":440"));
+            test("alternative routes",()->{var r=get("/api/routes/alternatives?source=GATE-A&destination=HEALTH&limit=3");expect(r,200,"K_SHORTEST_SIMPLE_PATHS");check(r.body().split("totalDistanceMetres",-1).length-1==3,"expected three alternatives");});
             test("disconnected path",()->expect(get("/api/routes/shortest?source=GATE-A&destination=ARCHIVE"),200,"\"found\":false"));
             test("missing query parameter is 400",()->expect(get("/api/routes/shortest?source=GATE-A"),400,"Query parameter"));
             test("unknown endpoint is 404",()->expect(get("/api/nothing"),404,"API endpoint not found"));

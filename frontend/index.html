@@ -67,7 +67,7 @@
               <label>Starting location<select id="sourceSelect" required></select></label>
               <button type="button" class="swap-button" id="swapBtn" aria-label="Swap locations">⇅</button>
               <label>Destination<select id="destinationSelect" required></select></label>
-              <fieldset><legend>Algorithm</legend><label class="algorithm-option active"><input type="radio" name="algorithm" value="shortest" checked><span><strong>Dijkstra</strong><small>Minimum total distance</small></span></label><label class="algorithm-option"><input type="radio" name="algorithm" value="reachable"><span><strong>BFS</strong><small>First reachable path</small></span></label></fieldset>
+              <fieldset><legend>Route preference</legend><label class="algorithm-option active"><input type="radio" name="algorithm" value="shortest" checked><span><strong>Shortest distance</strong><small>Dijkstra · minimum metres</small></span></label><label class="algorithm-option"><input type="radio" name="algorithm" value="reachable"><span><strong>Fewer stops</strong><small>BFS · not always shortest</small></span></label><label class="algorithm-option"><input type="radio" name="algorithm" value="alternatives"><span><strong>Route choices</strong><small>Up to 3 distinct routes</small></span></label></fieldset>
               <button class="primary-button" type="submit"><span>Find best route</span><b>→</b></button>
             </form>
             <div id="routeResult" class="route-result empty"><span class="result-icon">⌁</span><strong>Your route will appear here</strong><p>Select two different campus locations.</p></div>
@@ -97,5 +97,6 @@
   <dialog id="loginDialog"><form id="loginForm"><button class="dialog-close" type="button" aria-label="Close">×</button><p class="eyebrow">SECURE ACCESS</p><h2>Administrator login</h2><p class="muted">Authorized campus staff can manage locations, routes and analytics.</p><label>Username<input name="username" autocomplete="username" value="admin" required></label><label>Password<input name="password" type="password" autocomplete="current-password" required></label><p class="login-error" id="loginError" role="alert" hidden></p><button class="primary-button" type="submit">Sign in securely</button></form></dialog>
   <script src="/app.js" defer></script>
   <script src="/admin.js" defer></script>
+  <script src="/routes.js" defer></script>
 </body>
 </html>

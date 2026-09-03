@@ -90,6 +90,14 @@ public final class CampusGraph {
         return new WeightedPath(reconstruct(parent, source, destination), distance.get(destination));
     }
 
+    public List<WeightedPath> shortestSimplePaths(String source,String destination,int limit){
+        requireVertex(source);requireVertex(destination);if(limit<1||limit>5)throw new IllegalArgumentException("Alternative route limit must be between 1 and 5.");
+        PriorityQueue<PathCandidate> queue=new PriorityQueue<>(Comparator.comparingInt(PathCandidate::distance));
+        queue.add(new PathCandidate(List.of(source),0));List<WeightedPath> results=new ArrayList<>();int examined=0;
+        while(!queue.isEmpty()&&results.size()<limit&&examined++<20_000){PathCandidate current=queue.remove();String last=current.ids().get(current.ids().size()-1);if(last.equals(destination)){results.add(new WeightedPath(current.ids(),current.distance()));continue;}for(Edge edge:adjacency.get(last)){if(current.ids().contains(edge.destinationId()))continue;long next=(long)current.distance()+edge.distanceMetres();if(next>Integer.MAX_VALUE)continue;List<String> ids=new ArrayList<>(current.ids());ids.add(edge.destinationId());queue.add(new PathCandidate(List.copyOf(ids),(int)next));}}
+        return List.copyOf(results);
+    }
+
     public int distanceBetween(String source, String destination) {
         return adjacency.getOrDefault(source, List.of()).stream()
                 .filter(e -> e.destinationId().equals(destination)).findFirst()
@@ -109,6 +117,7 @@ public final class CampusGraph {
         return List.copyOf(path);
     }
     private record NodeDistance(String id, int distance) { }
+    private record PathCandidate(List<String> ids,int distance) { }
     public record WeightedPath(List<String> ids, int totalDistanceMetres) {
         public WeightedPath { ids = List.copyOf(ids); }
         public static WeightedPath notFound() { return new WeightedPath(List.of(), 0); }

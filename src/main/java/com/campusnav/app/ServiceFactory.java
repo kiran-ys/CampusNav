@@ -25,9 +25,7 @@ public final class ServiceFactory {
         } else {
             throw new IllegalArgumentException("CAMPUSNAV_STORAGE must be 'memory' or 'postgres'.");
         }
-        if (booleanValue(environment, "CAMPUSNAV_SEED", true) && service.locations().isEmpty()) {
-            SampleDataLoader.load(service);
-        }
+        if (booleanValue(environment, "CAMPUSNAV_SEED", true)) SampleDataLoader.ensure(service);
         return service;
     }
 

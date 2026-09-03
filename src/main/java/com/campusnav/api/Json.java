@@ -43,6 +43,7 @@ final class Json {
         return "{\"found\":true," + field("algorithm", algorithm) + ",\"locations\":" + locations
                 + ",\"segments\":" + segments + ",\"totalDistanceMetres\":" + result.totalDistanceMetres() + "}";
     }
+    static String alternativePaths(List<PathResult> results){return results.stream().map(r->path(r,"ALTERNATIVE")).collect(java.util.stream.Collectors.joining(",","{\"algorithm\":\"K_SHORTEST_SIMPLE_PATHS\",\"routes\":[","]}"));}
 
     private static String segment(PathSegment value) {
         return "{" + field("sourceId", value.source().id()) + "," + field("sourceName", value.source().name()) + ","
