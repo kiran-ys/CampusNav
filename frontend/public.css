@@ -15,3 +15,23 @@
 .form-panel form.readonly select,
 .form-panel form.readonly textarea,
 .form-panel form.readonly button { cursor: not-allowed; }
+
+body,
+button,
+input,
+select,
+textarea,
+.brand strong,
+.topbar h1,
+.metric strong,
+.panel h2,
+.route-summary b,
+.graph-node text.name,
+.graph-node text.id,
+.graph-edge-label {
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+}
+
+@media (max-width: 720px) {
+  .table-row.route-row > *:nth-child(3) { display: flex; }
+}
