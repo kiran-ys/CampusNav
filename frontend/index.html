@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="CampusNav smart campus route management and DSA visualizer">
+  <title>CampusNav · Smart Campus Operations</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/public.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="#overview" aria-label="CampusNav home">
+        <span class="brand-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18.5 9.2 5h5.6L20 18.5h-4.2l-1-2.8H9l-1 2.8H4Zm6.2-6h3.6L12 7.6l-1.8 4.9Z"/></svg></span>
+        <span><strong>CampusNav</strong><small>Smart mobility system</small></span>
+      </a>
+      <nav class="nav" aria-label="Main navigation">
+        <button class="nav-item active" data-view="overview"><span>⌂</span> Overview</button>
+        <button class="nav-item" data-view="planner"><span>⌁</span> Route planner</button>
+        <button class="nav-item" data-view="locations"><span>⌖</span> Locations</button>
+        <button class="nav-item" data-view="network"><span>⌘</span> Network</button>
+      </nav>
+      <div class="dsa-card">
+        <span class="eyebrow">DSA ENGINE</span>
+        <strong>Graph intelligence</strong>
+        <p>Adjacency list, BFS traversal and Dijkstra optimization.</p>
+        <div class="complexity">O((V + E) log V)</div>
+      </div>
+      <div class="sidebar-foot"><span class="status-dot"></span><span><strong>PostgreSQL connected</strong><small id="syncTime">Syncing…</small></span></div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div><p class="eyebrow">CAMPUS OPERATIONS</p><h1 id="pageTitle">Network overview</h1></div>
+        <div class="top-actions"><div class="api-pill"><span class="status-dot"></span><span><small>API STATUS</small><strong id="apiStatus">Connecting</strong></span></div><button class="icon-button" id="refreshBtn" title="Refresh data" aria-label="Refresh data">↻</button></div>
+      </header>
+
+      <section class="view active" id="overviewView">
+        <div class="metric-grid">
+          <article class="metric"><span class="metric-icon cyan">⌖</span><div><small>LOCATIONS</small><strong id="locationCount">—</strong><p>Active campus nodes</p></div></article>
+          <article class="metric"><span class="metric-icon violet">⌁</span><div><small>ROUTES</small><strong id="routeCount">—</strong><p>Bidirectional edges</p></div></article>
+          <article class="metric"><span class="metric-icon amber">↔</span><div><small>NETWORK LENGTH</small><strong id="distanceTotal">—</strong><p>Total mapped metres</p></div></article>
+          <article class="metric"><span class="metric-icon green">●</span><div><small>SYSTEM</small><strong>Online</strong><p>Java API + PostgreSQL</p></div></article>
+        </div>
+        <div class="workspace-grid">
+          <article class="panel map-panel">
+            <div class="panel-head"><div><p class="eyebrow">LIVE NETWORK</p><h2>Interactive campus map</h2><p>Every node and edge is loaded from your Java REST API.</p></div><div class="legend"><span><i class="dot cyan-bg"></i>Location</span><span><i class="line"></i>Route</span><span><i class="line active-line"></i>Selected path</span></div></div>
+            <div class="map-stage"><svg id="networkMap" viewBox="0 0 900 560" role="img" aria-label="Campus route graph"></svg><div class="map-hint">Select two locations in Route Planner to highlight a path</div></div>
+          </article>
+          <aside class="panel activity-panel"><div class="panel-head"><div><p class="eyebrow">NETWORK DIRECTORY</p><h2>Campus locations</h2></div><button class="text-button" data-goto="locations">View all</button></div><div id="locationPreview" class="location-preview"></div></aside>
+        </div>
+      </section>
+
+      <section class="view" id="plannerView">
+        <div class="planner-grid">
+          <article class="panel route-control">
+            <p class="eyebrow">ROUTE INTELLIGENCE</p><h2>Plan a campus journey</h2><p class="muted">Choose endpoints and compare reachability with optimized distance.</p>
+            <form id="routeSearchForm">
+              <label>Starting location<select id="sourceSelect" required></select></label>
+              <button type="button" class="swap-button" id="swapBtn" aria-label="Swap locations">⇅</button>
+              <label>Destination<select id="destinationSelect" required></select></label>
+              <fieldset><legend>Algorithm</legend><label class="algorithm-option active"><input type="radio" name="algorithm" value="shortest" checked><span><strong>Dijkstra</strong><small>Minimum total distance</small></span></label><label class="algorithm-option"><input type="radio" name="algorithm" value="reachable"><span><strong>BFS</strong><small>First reachable path</small></span></label></fieldset>
+              <button class="primary-button" type="submit"><span>Find best route</span><b>→</b></button>
+            </form>
+            <div id="routeResult" class="route-result empty"><span class="result-icon">⌁</span><strong>Your route will appear here</strong><p>Select two different campus locations.</p></div>
+          </article>
+          <article class="panel planner-map"><div class="panel-head"><div><p class="eyebrow">VISUAL PATH</p><h2>Route visualization</h2></div><span class="algorithm-badge" id="algorithmBadge">DIJKSTRA</span></div><div class="map-stage"><svg id="plannerMap" viewBox="0 0 900 560" role="img" aria-label="Selected campus route"></svg></div></article>
+        </div>
+      </section>
+
+      <section class="view" id="locationsView">
+        <div class="section-grid">
+          <article class="panel form-panel"><p class="eyebrow">LOCATION MANAGEMENT</p><h2>Add a campus location</h2><p class="muted">New locations are validated by Java and saved in PostgreSQL.</p><div class="readonly-notice" data-readonly hidden><strong>Public demo is read-only</strong><span>Run CampusNav locally to add or change data.</span></div><form id="locationForm"><label>Location ID<input name="id" maxlength="20" placeholder="e.g. AUD-1" required></label><label>Location name<input name="name" maxlength="120" placeholder="Main Auditorium" required></label><label>Type<select name="type" id="typeSelect" required></select></label><label>Description<textarea name="description" maxlength="500" placeholder="Describe this campus facility" required></textarea></label><button class="primary-button" type="submit">Save location <b>＋</b></button></form></article>
+          <article class="panel directory-panel"><div class="panel-head"><div><p class="eyebrow">DIRECTORY</p><h2>All locations</h2></div><label class="search-box"><span>⌕</span><input id="locationSearch" placeholder="Search by name or ID"></label></div><div id="locationTable" class="data-table"></div></article>
+        </div>
+      </section>
+
+      <section class="view" id="networkView">
+        <div class="section-grid">
+          <article class="panel form-panel"><p class="eyebrow">ROUTE MANAGEMENT</p><h2>Connect two locations</h2><p class="muted">Routes are bidirectional and require a positive distance.</p><div class="readonly-notice" data-readonly hidden><strong>Public demo is read-only</strong><span>Run CampusNav locally to manage routes.</span></div><form id="routeForm"><label>Source<select name="sourceId" id="routeSource" required></select></label><label>Destination<select name="destinationId" id="routeDestination" required></select></label><label>Distance in metres<input name="distanceMetres" type="number" min="1" step="1" placeholder="150" required></label><button class="primary-button" type="submit">Create route <b>＋</b></button></form><div class="rule-box"><strong>Validation rules</strong><ul><li>Both location IDs must exist</li><li>Source and destination must differ</li><li>Duplicate and reverse routes are rejected</li></ul></div></article>
+          <article class="panel directory-panel"><div class="panel-head"><div><p class="eyebrow">EDGE REGISTRY</p><h2>All walking routes</h2></div><span class="count-badge" id="routeBadge">0 routes</span></div><div id="routeTable" class="data-table"></div></article>
+        </div>
+      </section>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="/app.js" defer></script>
+</body>
+</html>

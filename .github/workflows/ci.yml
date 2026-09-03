@@ -1,0 +1,39 @@
+name: CampusNav CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: campusnav_test
+          POSTGRES_USER: campusnav
+          POSTGRES_PASSWORD: campusnav
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U campusnav -d campusnav_test"
+          --health-interval 3s
+          --health-timeout 3s
+          --health-retries 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: JavaScript syntax
+        run: node --check frontend/app.js
+      - name: Core and API tests
+        run: /bin/sh scripts/test.sh
+      - name: PostgreSQL tests
+        run: /bin/sh scripts/test-postgres.sh
+        env:
+          CAMPUSNAV_TEST_DB_URL: jdbc:postgresql://127.0.0.1:5432/campusnav_test
+          CAMPUSNAV_TEST_DB_USER: campusnav
+          CAMPUSNAV_TEST_DB_PASSWORD: campusnav

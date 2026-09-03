@@ -1,0 +1,17 @@
+.readonly-notice {
+  margin: 18px 0 -7px;
+  padding: 12px 13px;
+  border: 1px solid rgba(255, 186, 98, .35);
+  border-radius: 10px;
+  background: rgba(255, 186, 98, .08);
+  color: var(--amber);
+}
+.readonly-notice strong, .readonly-notice span { display: block; }
+.readonly-notice strong { font-size: 11px; }
+.readonly-notice span { margin-top: 2px; color: #a9bbc7; font-size: 9px; }
+.readonly-notice[hidden] { display: none; }
+.form-panel form.readonly { opacity: .55; }
+.form-panel form.readonly input,
+.form-panel form.readonly select,
+.form-panel form.readonly textarea,
+.form-panel form.readonly button { cursor: not-allowed; }

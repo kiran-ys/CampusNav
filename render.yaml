@@ -1,0 +1,49 @@
+services:
+  - type: web
+    name: campusnav
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health
+    envVars:
+      - key: CAMPUSNAV_STORAGE
+        value: postgres
+      - key: CAMPUSNAV_HOST
+        value: 0.0.0.0
+      - key: CAMPUSNAV_DB_MIGRATE
+        value: true
+      - key: CAMPUSNAV_SEED
+        value: true
+      - key: CAMPUSNAV_WRITES_ENABLED
+        value: false
+      - key: CAMPUSNAV_DB_HOST
+        fromDatabase:
+          name: campusnav-db
+          property: host
+      - key: CAMPUSNAV_DB_PORT
+        fromDatabase:
+          name: campusnav-db
+          property: port
+      - key: CAMPUSNAV_DB_NAME
+        fromDatabase:
+          name: campusnav-db
+          property: database
+      - key: CAMPUSNAV_DB_USER
+        fromDatabase:
+          name: campusnav-db
+          property: user
+      - key: CAMPUSNAV_DB_PASSWORD
+        fromDatabase:
+          name: campusnav-db
+          property: password
+
+databases:
+  - name: campusnav-db
+    plan: free
+    region: singapore
+    databaseName: campusnav
+    user: campusnav
+    postgresMajorVersion: "17"
+    ipAllowList: []

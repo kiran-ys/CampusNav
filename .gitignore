@@ -1,0 +1,8 @@
+.DS_Store
+.idea/
+.vscode/
+out/
+dist/
+tmp/
+*.log
+*.class
