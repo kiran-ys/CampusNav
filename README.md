@@ -1,5 +1,10 @@
 # CampusNav - Smart Campus Management & Route Optimization System
 
+**Live application:** [https://campusnav-ys11.onrender.com](https://campusnav-ys11.onrender.com)  
+**Source code:** [https://github.com/kiran-ys/CampusNav](https://github.com/kiran-ys/CampusNav)
+
+> Render's free service can sleep after inactivity. The first request after sleeping may take up to approximately one minute.
+
 CampusNav is a deployable Java smart-campus navigation system. Phase 1 provides the assessed console and DSA core, Phase 2 exposes it through a REST API, Phase 3 adds PostgreSQL persistence, Phase 4 provides the interactive web application, and Phase 5 packages the complete platform for automated testing and cloud deployment.
 
 ## Implemented features
