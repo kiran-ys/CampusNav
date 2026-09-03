@@ -17,7 +17,11 @@ services:
       - key: CAMPUSNAV_SEED
         value: true
       - key: CAMPUSNAV_WRITES_ENABLED
-        value: false
+        value: true
+      - key: CAMPUSNAV_ADMIN_USERNAME
+        value: admin
+      - key: CAMPUSNAV_ADMIN_PASSWORD
+        sync: false
       - key: CAMPUSNAV_DB_HOST
         fromDatabase:
           name: campusnav-db

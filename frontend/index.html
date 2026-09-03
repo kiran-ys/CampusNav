@@ -12,6 +12,7 @@
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/styles.css">
   <link rel="stylesheet" href="/public.css">
+  <link rel="stylesheet" href="/admin.css">
 </head>
 <body>
   <div class="app-shell">
@@ -25,6 +26,7 @@
         <button class="nav-item" data-view="planner"><span>⌁</span> Route planner</button>
         <button class="nav-item" data-view="locations"><span>⌖</span> Locations</button>
         <button class="nav-item" data-view="network"><span>⌘</span> Network</button>
+        <button class="nav-item admin-only" data-view="analytics" hidden><span>▥</span> Analytics</button>
       </nav>
       <div class="dsa-card">
         <span class="eyebrow">DSA ENGINE</span>
@@ -38,7 +40,7 @@
     <main class="main">
       <header class="topbar">
         <div><p class="eyebrow">CAMPUS OPERATIONS</p><h1 id="pageTitle">Network overview</h1></div>
-        <div class="top-actions"><div class="api-pill"><span class="status-dot"></span><span><small>API STATUS</small><strong id="apiStatus">Connecting</strong></span></div><button class="icon-button" id="refreshBtn" title="Refresh data" aria-label="Refresh data">↻</button></div>
+        <div class="top-actions"><button class="admin-button" id="adminBtn">Administrator login</button><div class="api-pill"><span class="status-dot"></span><span><small>API STATUS</small><strong id="apiStatus">Connecting</strong></span></div><button class="icon-button" id="refreshBtn" title="Refresh data" aria-label="Refresh data">↻</button></div>
       </header>
 
       <section class="view active" id="overviewView">
@@ -76,10 +78,12 @@
 
       <section class="view" id="locationsView">
         <div class="section-grid">
-          <article class="panel form-panel"><p class="eyebrow">LOCATION MANAGEMENT</p><h2>Add a campus location</h2><p class="muted">New locations are validated by Java and saved in PostgreSQL.</p><div class="readonly-notice" data-readonly hidden><strong>Public demo is read-only</strong><span>Run CampusNav locally to add or change data.</span></div><form id="locationForm"><label>Location ID<input name="id" maxlength="20" placeholder="e.g. AUD-1" required></label><label>Location name<input name="name" maxlength="120" placeholder="Main Auditorium" required></label><label>Type<select name="type" id="typeSelect" required></select></label><label>Description<textarea name="description" maxlength="500" placeholder="Describe this campus facility" required></textarea></label><button class="primary-button" type="submit">Save location <b>＋</b></button></form></article>
+          <article class="panel form-panel"><p class="eyebrow">LOCATION MANAGEMENT</p><h2 id="locationFormTitle">Add a campus location</h2><p class="muted">Coordinates place locations geographically; leave both blank until verified.</p><div class="readonly-notice" data-readonly hidden><strong>Administrator access required</strong><span>Sign in to add, update or delete campus data.</span></div><form id="locationForm"><label>Location ID<input name="id" maxlength="20" placeholder="e.g. AUD-1" required></label><label>Location name<input name="name" maxlength="120" placeholder="Main Auditorium" required></label><label>Type<select name="type" id="typeSelect" required></select></label><div class="coordinate-grid"><label>Latitude<input name="latitude" type="number" min="-90" max="90" step="any" placeholder="12.9716"></label><label>Longitude<input name="longitude" type="number" min="-180" max="180" step="any" placeholder="77.5946"></label></div><label>Description<textarea name="description" maxlength="500" placeholder="Describe this campus facility" required></textarea></label><div class="form-actions"><button class="primary-button" type="submit">Save location <b>＋</b></button><button class="secondary-button" id="cancelLocationEdit" type="button" hidden>Cancel edit</button></div></form></article>
           <article class="panel directory-panel"><div class="panel-head"><div><p class="eyebrow">DIRECTORY</p><h2>All locations</h2></div><label class="search-box"><span>⌕</span><input id="locationSearch" placeholder="Search by name or ID"></label></div><div id="locationTable" class="data-table"></div></article>
         </div>
       </section>
+
+      <section class="view" id="analyticsView"><article class="panel analytics-panel"><div class="panel-head"><div><p class="eyebrow">ADMINISTRATOR MONITORING</p><h2>Usage analytics</h2><p>Privacy-conscious counts from server-side route searches and administration actions.</p></div><button class="text-button" id="analyticsRefresh">Refresh</button></div><div class="analytics-grid"><div class="metric"><small>ROUTE QUERIES</small><strong id="analyticsTotal">0</strong></div><div class="metric"><small>SUCCESSFUL</small><strong id="analyticsSuccess">0</strong></div><div class="metric"><small>DIJKSTRA</small><strong id="analyticsDijkstra">0</strong></div><div class="metric"><small>BFS</small><strong id="analyticsBfs">0</strong></div><div class="metric"><small>ADMIN CHANGES</small><strong id="analyticsMutations">0</strong></div></div><h3>Last 7 days</h3><div id="analyticsChart" class="analytics-chart"></div></article></section>
 
       <section class="view" id="networkView">
         <div class="section-grid">
@@ -90,6 +94,8 @@
     </main>
   </div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <dialog id="loginDialog"><form id="loginForm"><button class="dialog-close" type="button" aria-label="Close">×</button><p class="eyebrow">SECURE ACCESS</p><h2>Administrator login</h2><p class="muted">Authorized campus staff can manage locations, routes and analytics.</p><label>Username<input name="username" autocomplete="username" required></label><label>Password<input name="password" type="password" autocomplete="current-password" required></label><button class="primary-button" type="submit">Sign in securely</button></form></dialog>
   <script src="/app.js" defer></script>
+  <script src="/admin.js" defer></script>
 </body>
 </html>

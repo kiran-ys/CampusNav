@@ -34,6 +34,18 @@ public final class DatabaseMigrator {
                     CREATE UNIQUE INDEX IF NOT EXISTS uq_routes_endpoint_pair
                     ON routes (LEAST(source_id, destination_id), GREATEST(source_id, destination_id))
                     """);
+            statement.executeUpdate("ALTER TABLE locations ADD COLUMN IF NOT EXISTS latitude DOUBLE PRECISION");
+            statement.executeUpdate("ALTER TABLE locations ADD COLUMN IF NOT EXISTS longitude DOUBLE PRECISION");
+            statement.executeUpdate("""
+                    CREATE TABLE IF NOT EXISTS usage_events (
+                        id BIGSERIAL PRIMARY KEY,
+                        event_type VARCHAR(40) NOT NULL,
+                        algorithm VARCHAR(20),
+                        success BOOLEAN NOT NULL,
+                        occurred_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+                    )
+                    """);
+            statement.executeUpdate("CREATE INDEX IF NOT EXISTS idx_usage_events_occurred_at ON usage_events (occurred_at)");
             connection.commit();
         } catch (SQLException exception) {
             connection.rollback();

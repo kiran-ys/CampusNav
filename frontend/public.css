@@ -35,3 +35,5 @@ textarea,
 @media (max-width: 720px) {
   .table-row.route-row > *:nth-child(3) { display: flex; }
 }
+
+.admin-only[hidden] { display: none !important; }

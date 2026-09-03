@@ -4,6 +4,7 @@ import com.campusnav.model.Location;
 import com.campusnav.model.PathResult;
 import com.campusnav.model.PathSegment;
 import com.campusnav.model.Route;
+import com.campusnav.model.UsageAnalytics;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -15,7 +16,7 @@ final class Json {
     static String location(Location value) {
         return "{" + field("id", value.id()) + "," + field("name", value.name()) + ","
                 + field("type", value.type().name()) + "," + field("typeDisplay", value.type().displayName()) + ","
-                + field("description", value.description()) + "}";
+                + field("description", value.description()) + ",\"latitude\":" + number(value.latitude()) + ",\"longitude\":" + number(value.longitude()) + "}";
     }
 
     static String locations(List<Location> values) {
@@ -52,6 +53,8 @@ final class Json {
     static String error(String code, String message, String requestId) {
         return "{\"error\":{" + field("code", code) + "," + field("message", message) + "," + field("requestId", requestId) + "}}";
     }
+    static String analytics(UsageAnalytics value){String daily=value.dailyUsage().stream().map(d->"{"+field("date",d.date())+",\"routeQueries\":"+d.routeQueries()+"}").collect(java.util.stream.Collectors.joining(",","[","]"));return "{\"totalRouteQueries\":"+value.totalRouteQueries()+",\"successfulRouteQueries\":"+value.successfulRouteQueries()+",\"bfsQueries\":"+value.bfsQueries()+",\"dijkstraQueries\":"+value.dijkstraQueries()+",\"adminMutations\":"+value.adminMutations()+",\"dailyUsage\":"+daily+"}";}
+    private static String number(Double value){return value==null?"null":Double.toString(value);}
 
     static String field(String name, String value) {
         return quote(name) + ":" + quote(value);
@@ -89,9 +92,10 @@ final class Json {
         }
         private Object value() {
             if (peek('\"')) return string();
-            int start=index; if(peek('-'))index++; while(index<source.length()&&Character.isDigit(source.charAt(index)))index++;
-            if(start==index||(start+1==index&&source.charAt(start)=='-'))throw bad("Expected a string or integer");
-            try{return Integer.parseInt(source.substring(start,index));}catch(NumberFormatException e){throw bad("Integer is out of range");}
+            if(source.startsWith("null",index)){index+=4;return null;}
+            int start=index; if(peek('-'))index++; while(index<source.length()&&Character.isDigit(source.charAt(index)))index++;boolean decimal=false;if(peek('.')){decimal=true;index++;while(index<source.length()&&Character.isDigit(source.charAt(index)))index++;}
+            if(start==index||(start+1==index&&source.charAt(start)=='-'))throw bad("Expected a string or number");
+            try{if(decimal)return Double.parseDouble(source.substring(start,index));return Integer.parseInt(source.substring(start,index));}catch(NumberFormatException e){throw bad("Number is out of range");}
         }
         private String string() {
             skip(); expect('\"'); StringBuilder result=new StringBuilder();

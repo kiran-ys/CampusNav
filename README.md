@@ -124,17 +124,19 @@ The repository includes:
 - A GitHub Actions workflow that verifies Java, API, frontend, and database behavior.
 - Health checks at `/api/health`.
 - Database-aware health reporting and restrictive browser security headers.
-- Read-only public mode so anonymous visitors cannot modify portfolio data.
+- Secure administrator sessions for controlled online editing, with CSRF protection and login throttling.
+- Coordinate-aware campus mapping, complete update/delete workflows, and persisted usage analytics.
 
 Deployment workflow:
 
 1. Create a GitHub repository and push this project.
 2. In Render, select **New → Blueprint** and connect the repository.
-3. Render reads `render.yaml`, creates the web service and PostgreSQL database, and injects database credentials securely.
-4. After deployment, open the assigned `https://...onrender.com` URL and verify `/api/health`.
+3. When prompted, set a strong secret value for `CAMPUSNAV_ADMIN_PASSWORD`. Never commit it to Git.
+4. Render reads `render.yaml`, creates the web service and PostgreSQL database, and injects database credentials securely.
+5. After deployment, open the assigned `https://...onrender.com` URL and verify `/api/health`, administrator login, and logout.
 
 Do not commit passwords or replace Blueprint database references with literal credentials.
-The Render Blueprint sets `CAMPUSNAV_WRITES_ENABLED=false`. Route planning remains fully interactive, but anonymous public visitors cannot create locations or routes. Local classroom demonstrations retain editing by default.
+The Render Blueprint enables controlled writes, but every create, update, delete, and analytics operation requires an authenticated administrator session. Anonymous visitors retain read-only route planning.
 
 ## Project structure
 
@@ -153,7 +155,9 @@ src/main/java/com/campusnav/
 frontend/
   index.html    Accessible dashboard structure
   styles.css    Responsive visual system and graph styling
-  app.js        API integration, SVG graph and management workflows
+  app.js        Public API integration and SVG graph workflows
+  admin.js      Secure login, CRUD, coordinate and analytics workflows
+  admin.css     Administrator and analytics interface styles
 
 src/test/java/com/campusnav/
   CampusNavTestSuite.java
